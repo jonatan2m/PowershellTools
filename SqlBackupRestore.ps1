@@ -14,20 +14,48 @@ function New-SqlBackup(){
         [String]
         $Instance,
         
+        [parameter(Mandatory=$true)]
+        [String]
+        $Login,
+
+        [parameter(Mandatory=$true)]
+        [String]
+        $Password,
+
         [parameter(Mandatory=$false)]
         [String]
-        $Database
-    )
+        $Database,        
 
-    $svr = new-Object Microsoft.SqlServer.Management.Smo.Server($Instance)
-    while(!$Database){
+        [parameter(Mandatory=$false)]
+        [String]        
+        $BackupDirectory
+    )
+        
+    $mySrvConn = new-object Microsoft.SqlServer.Management.Common.ServerConnection    
+    $mySrvConn.ServerInstance=$Instance
+    $mySrvConn.LoginSecure = $false
+    $mySrvConn.Login = $Login
+    $mySrvConn.Password = $Password
+
+    $svr = new-Object Microsoft.SqlServer.Management.Smo.Server($mySrvConn)
+    
+    while(!$BackupDirectory){
+        Write-Host 'Default Directory: ' $svr.Settings.BackupDirectory
+        $BackupDirectory = (Read-Host -Prompt "Type the new path, if necessary:") | % {$_.Trim()}
+        
+        if(!$BackupDirectory){            
+            $BackupDirectory = $svr.Settings.BackupDirectory
+        }
+    }
+    
+     while(!$Database){
         Write-Host $svr.Databases
         $Database = (Read-Host -Prompt "Type the database's name:") | % {$_.Trim()}
     }
-    Write-Host 'Gerando backup...'
+
+    Write-Host 'Generating backup...'
     
-    $dt = Get-Date -Format yyyyMMddHHmmss
-    $bdir = $svr.Settings.BackupDirectory
+    $dt = Get-Date -Format yyyyMMddHHmmss        
     $db = $svr.Databases[$database]
     $dbname = $db.Name
 
@@ -38,7 +66,7 @@ function New-SqlBackup(){
     $dbbk.BackupSetName = $dbname + " Backup"
     $dbbk.Database = $dbname
     $dbbk.MediaDescription = "Disk"
-    $dbbk.Devices.AddDevice($bdir + "\" + $dbname + "_db_" + $dt + ".bak", 'File')
+    $dbbk.Devices.AddDevice($BackupDirectory + "\" + $dbname + "_db_" + $dt + ".bak", 'File')
     $dbbk.SqlBackup($svr.Name)
 }
 
