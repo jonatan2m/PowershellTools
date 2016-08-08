@@ -2,5 +2,7 @@
 	'server':'.\SQLEXPRESS',
 	'username':'sa',
 	'passw':'12345678',
+	'dbName':'DatabaseName',
+	'path':'D:\Backups',	
 	'alias':'Localhost'
 }]
