@@ -1,0 +1,6 @@
+[{
+	'server':'.\SQLEXPRESS',
+	'username':'sa',
+	'passw':'12345678',
+	'alias':'Localhost'
+}]
