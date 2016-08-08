@@ -1,4 +1,4 @@
-﻿ Write-Host "Updating  ExecutionPolicy "
+﻿ #Write-Host "Updating  ExecutionPolicy "
  #Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 
 . ($PSScriptRoot + '\SqlBackupRestore.ps1')
