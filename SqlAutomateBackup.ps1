@@ -6,7 +6,7 @@
 $items = Get-Content -Raw -Path  ($PSScriptRoot + '\dbinfo.json') | ConvertFrom-Json
 	
 foreach($i in $items){
-    Write-Host "Generating backuping to " $i.alias
+    Write-Host "Starting backup to " $i.alias
     New-SqlBackup -Instance $i.server -Login $i.username -Password $i.passw -BackupDirectory $i.path -Database $i.dbName
 }
 

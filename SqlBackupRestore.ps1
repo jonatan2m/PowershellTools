@@ -83,6 +83,10 @@ function New-SqlRestore(){
         
         [parameter(Mandatory=$false)]
         [String]
+        $Directory,
+
+        [parameter(Mandatory=$false)]
+        [String]
         $FileName
     )
 
@@ -93,17 +97,28 @@ function New-SqlRestore(){
         $Database = (Read-Host -Prompt "Type the database's name.") | % {$_.Trim()}
     }
 
-    $bdir = $svr.Settings.BackupDirectory
+
+    if(!$Directory){
+        Write-Host 'Default directory: ' $svr.Settings.BackupDirectory
+        Write-Host 'To override Default directory, type the path, or type only [ENTER] to use the default option'
+        
+        $Directory = (Read-Host -Prompt ("Path to override Default directory: " + $svr.Settings.BackupDirectory) ) | % {$_.Trim()}       
+        if(!$Directory){
+            $Directory = $svr.Settings.BackupDirectory
+        }
+    }
+
+    $bdir = 
 
     $dbbk = new-object ('Microsoft.SqlServer.Management.Smo.Backup')
 
     while(!$FileName){
-        Write-Host (Get-ChildItem $bdir)
+        Write-Host (Get-ChildItem $Directory)
         $FileName = (Read-Host -Prompt "Type the filename:") | % {$_.Trim()}
     }
     Write-Host 'Restoring...'
 
-    $BackupFile = Get-ChildItem $bdir -Filter $FileName | select -First 1
+    $BackupFile = Get-ChildItem $Directory -Filter $FileName | select -First 1
     
     Write-Host $BackupFile
     
